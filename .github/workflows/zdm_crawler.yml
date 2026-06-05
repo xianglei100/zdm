@@ -94,7 +94,7 @@ jobs:
         NEW_ROWS=$((CURRENT_COUNT - LAST_COUNT))
         echo "Last count: $LAST_COUNT , Current count: $CURRENT_COUNT , New rows: $NEW_ROWS"
         if [ $NEW_ROWS -ge $COMMIT_THRESHOLD ]; then
-          echo "should_commit=true" >> $GITHUB_OUTPUT
+         # echo "should_commit=true" >> $GITHUB_OUTPUT
         fi
         cp database.db database_old.db
     # 保存已推送和暂未推送的优惠信息
