@@ -107,29 +107,50 @@ public class ZdmCrawler {
         });
     }
 private static boolean pushToWechat(List<Zdm> list, String spt) {
-        List<Map<String, Object>> productList = list.stream().map(product -> {
-            Map<String, Object> productParam = new HashMap<>();
-            productParam.put("title", product.getTitle());
-            productParam.put("description", product.getTitle());
-            productParam.put("url", product.getUrl());
-            productParam.put("picurl", product.getPicUrl());
-            return productParam;
-        }).collect(Collectors.toList());
-        Map<String, Object> contents = new HashMap<>();
-        contents.put("articles", productList);
-        Map<String, Object> param = new HashMap<>();
-        param.put("msgtype", "news");
-        param.put("news", contents);
-        try {
-            String response = HttpUtil.createPost(spt)
-                    .contentType(ContentType.JSON.getValue())
-                    .body(JSONObject.toJSONString(param))
-                    .execute().body();
-        } catch (Exception e) {
-            return false;
+        if (CollectionUtil.isEmpty(list)) {
+            return true;
+        }
+        int loopTimes = 0;
+        long time1 = System.currentTimeMillis();
+        for (int i=0; i < list.size(); i++) {
+            loopTimes++;
+            List<Map<String, Object>> productList = Collections.singletonList(list.get(i)).stream().map(product -> {
+                Map<String, Object> productParam = new HashMap<>();
+                productParam.put("title", product.getTitle());
+                productParam.put("description", product.getTitle());
+                productParam.put("url", product.getUrl());
+                productParam.put("picurl", product.getPicUrl());
+                return productParam;
+            }).collect(Collectors.toList());
+            Map<String, Object> contents = new HashMap<>();
+            contents.put("articles", productList);
+            Map<String, Object> param = new HashMap<>();
+            param.put("msgtype", "news");
+            param.put("news", contents);
+            try {
+                String response = HttpUtil.createPost(spt)
+                        .contentType(ContentType.JSON.getValue())
+                        .body(JSONObject.toJSONString(param))
+                        .execute().body();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (loopTimes >= 20) {
+                loopTimes = 0;
+                long seconds = (System.currentTimeMillis() -time1) / 1000;
+                if (seconds < 60) {
+                    try {
+                        Thread.sleep((60 - seconds) * 1000);
+                    }catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                }
+                time1 = System.currentTimeMillis();
+            }
         }
         return true;
     }
+    
     private static Collection<Zdm> obtainUnpushedArticles(int maxPageSize) {
         //GitHub Actions部署的服务器一般在海外,调整为东八区的时区
         ZoneId zoneId = ZoneId.of("GMT+8");
