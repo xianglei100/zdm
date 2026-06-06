@@ -97,7 +97,7 @@ public class ZdmCrawler {
             //通过邮箱推送
             boolean pushToEmail = pushToEmail(text, emailHost, emailPort, emailAccount, emailPassword);
             //通过WxPusher推送
-            boolean pushToWx = pushToWx(text, spt);
+            boolean pushToWx = pushToWechat(part);
             if (!pushToEmail && !pushToWx)
                 throw new RuntimeException("未匹配到推送方式,请检查配置");
 
@@ -106,7 +106,30 @@ public class ZdmCrawler {
             ZdmMapper.saveOrUpdateBatch(part);
         });
     }
-
+private static boolean pushToWechat(List<Zdm> list) {
+        List<Map<String, Object>> productList = list.stream().map(product -> {
+            Map<String, Object> productParam = new HashMap<>();
+            productParam.put("title", product.getTitle());
+            productParam.put("description", product.getTitle());
+            productParam.put("url", product.getUrl());
+            productParam.put("picurl", product.getPicUrl());
+            return productParam;
+        }).collect(Collectors.toList());
+        Map<String, Object> contents = new HashMap<>();
+        contents.put("articles", productList);
+        Map<String, Object> param = new HashMap<>();
+        param.put("msgtype", "news");
+        param.put("news", contents);
+        try {
+            String response = HttpUtil.createPost(spt)
+                    .contentType(ContentType.JSON.getValue())
+                    .body(JSONObject.toJSONString(param))
+                    .execute().body();
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
     private static Collection<Zdm> obtainUnpushedArticles(int maxPageSize) {
         //GitHub Actions部署的服务器一般在海外,调整为东八区的时区
         ZoneId zoneId = ZoneId.of("GMT+8");
