@@ -21,6 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.Collections;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
