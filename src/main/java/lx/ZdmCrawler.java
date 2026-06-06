@@ -91,7 +91,7 @@ public class ZdmCrawler {
             return;
 
         //部分推送方式存在内容长度限制, 这里加了单次推送的条数限制, 超出则分批推送
-        Lists.partition(new ArrayList<>(zdms), 100).forEach(part -> {
+        Lists.partition(new ArrayList<>(zdms), 8).forEach(part -> {
             //生成推送消息的正文内容(html格式)
             String text = Utils.buildMessage(part);
             //通过邮箱推送
