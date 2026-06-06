@@ -97,7 +97,7 @@ public class ZdmCrawler {
             //通过邮箱推送
             boolean pushToEmail = pushToEmail(text, emailHost, emailPort, emailAccount, emailPassword);
             //通过WxPusher推送
-            boolean pushToWx = pushToWechat(part);
+            boolean pushToWx = pushToWechat(part, spt);
             if (!pushToEmail && !pushToWx)
                 throw new RuntimeException("未匹配到推送方式,请检查配置");
 
@@ -106,7 +106,7 @@ public class ZdmCrawler {
             ZdmMapper.saveOrUpdateBatch(part);
         });
     }
-private static boolean pushToWechat(List<Zdm> list) {
+private static boolean pushToWechat(List<Zdm> list, String spt) {
         List<Map<String, Object>> productList = list.stream().map(product -> {
             Map<String, Object> productParam = new HashMap<>();
             productParam.put("title", product.getTitle());
