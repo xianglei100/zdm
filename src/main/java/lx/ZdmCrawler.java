@@ -117,8 +117,8 @@ private static boolean pushToWechat(List<Zdm> list, String spt) {
             loopTimes++;
             List<Map<String, Object>> productList = Collections.singletonList(list.get(i)).stream().map(product -> {
                 Map<String, Object> productParam = new HashMap<>();
-                productParam.put("title", "价："+product.getPrice()+"评："+product.getComments()+"值："+product.getVoted()+" "+product.getTitle());
-                productParam.put("description", product.getTitle());
+                productParam.put("title", product.getTitle());
+                productParam.put("description", "价："+product.getPrice()+" \n评："+product.getComments()+" \n值："+product.getVoted());
                 productParam.put("url", product.getUrl());
                 productParam.put("picurl", product.getPicUrl());
                 return productParam;
