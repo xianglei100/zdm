@@ -21,7 +21,9 @@ public class Zdm implements Crawlable {
     @Id
     @JSONField(name = "article_id")
     String articleId;
-
+    //content
+    @JSONField(name = "article_content")
+    String content;
     //标题
     @JSONField(name = "article_title")
     String title;
